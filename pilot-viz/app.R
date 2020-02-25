@@ -38,12 +38,17 @@ r2 <- stack(f2)
 adm2 <- shapefile("data/admin-oyo-itesiwaju/nga-lga-oyo-itesiwaju.shp")
 h2 <- shapefile("data/hamlet-oyo-itesiwaju.shp")
 
+# WHO Health Facilities
+load("data/WHO-HealthFacilities.RData")
+
+# GRID3 Health Facilities
+load("data/GRID3-HealthFacilities.RData")
 
 # Combine data by district
 
-dat1 <- list(a = adm1, h = h1, r = r1)
+dat1 <- list(a = adm1, h = h1, r = r1, whf = whf1, ghf = ghf1)
 
-dat2 <- list(a = adm2, h = h2, r = r2)
+dat2 <- list(a = adm2, h = h2, r = r2, whf = whf2, ghf = ghf2)
 
 
 # Set population bin or viz
@@ -135,11 +140,13 @@ server <- function(input, output) {
       addPolygons(data = data$a, fill = FALSE, stroke = TRUE, weight = 1, color = "black", group = "Admin Boundary") %>%
       addRasterImage(subset(data$r, k), colors = r.pal, group = "FB Population") %>%
       addPolygons(data = data$h, fill = FALSE, stroke = TRUE, color = "grey", group = "Hamlet area", weight = 1) %>%
+      addCircles(data = data$whf, color = "red", fillColor = "red", group = "HF - WHO") %>%
+      addCircles(data = data$ghf, color = "green", fillColor = "green", group = "HF - GRID3") %>%
       addLegend(pal = r.pal, values = values(subset(data$r, k)),
                 title = "Population") %>%
       addLayersControl(
         overlayGroups = c("FB Population", 
-                          "Hamlet area"),
+                          "Hamlet area", "HF - WHO", "HF - GRID3"),
         options = layersControlOptions(collapsed = FALSE)
       )
   })
